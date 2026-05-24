@@ -1,8 +1,35 @@
-# 附录
+#set page(
+  paper: "a4",
+  margin: (top: 2.5cm, bottom: 2.5cm, left: 2.8cm, right: 2.6cm),
+)
+#set text(font: "SimSun", size: 12pt, lang: "zh")
+#set par(justify: true, first-line-indent: 2em, leading: 0.7em)
+#set raw(block: true)
 
-## 附录A 建模计算核心代码
+#show heading: it => {
+  set text(font: "SimHei", size: 12pt, weight: "regular")
+  set par(first-line-indent: 0pt)
+  block(above: 12pt, below: 6pt)[#it.body]
+}
 
-### A.1 通用参数、功率平衡与绿电指标
+#show table: it => {
+  set text(font: "SimSun", size: 9pt)
+  set par(first-line-indent: 0pt, justify: false)
+  it
+}
+
+#show raw.where(block: true): it => {
+  set text(size: 8pt)
+  block(width: 100%, inset: 6pt, fill: rgb("#f7f7f7"), stroke: rgb("#dddddd"), radius: 2pt)[#it]
+}
+
+#align(center)[#text(font: "SimHei", size: 14pt)[附录]]
+#v(1em)
+
+
+= 附录A 建模计算核心代码
+
+== A.1 通用参数、功率平衡与绿电指标
 
 ```python
 from pathlib import Path
@@ -71,7 +98,7 @@ def classify(ind):
     return "部分满足"
 ```
 
-### A.2 吨氨成本计算
+== A.2 吨氨成本计算
 
 ```python
 def daily_cost_72(wind, pv, buy, sell, y, ecap=0, storage_throughput=0):
@@ -114,7 +141,7 @@ def daily_cost_36(wind, pv, buy, sell):
     )
 ```
 
-### A.3 问题二：离散日产量与开停小时优化
+== A.3 问题二：离散日产量与开停小时优化
 
 ```python
 def opt_discrete(wind, pv, production):
@@ -179,7 +206,7 @@ def solve_all_scenarios_discrete():
     return q2_all, q2_best
 ```
 
-### A.4 问题三：连续负荷率动态规划
+== A.4 问题三：连续负荷率动态规划
 
 ```python
 def opt_continuous_dp(wind, pv, production, step=0.01):
@@ -271,7 +298,7 @@ def solve_all_scenarios_continuous():
     return q3_all, q3_best
 ```
 
-### A.5 问题四：离网无储能模型
+== A.5 问题四：离网无储能模型
 
 ```python
 MIN_LOAD_RATE = 0.1
@@ -312,7 +339,7 @@ off_df = pd.DataFrame(off_rows)
 off_df.to_csv(OUT / "q4_offgrid_no_storage.csv", index=False, encoding="utf-8-sig")
 ```
 
-### A.6 问题四：储能参与离网调度
+== A.6 问题四：储能参与离网调度
 
 ```python
 ETA_C = 0.9
@@ -431,7 +458,7 @@ def dispatch_storage_offgrid(wind, pv, ecap, max_nodes=5000):
     return y, charge, discharge, soc, curtail, unserved, production, cost, throughput, nodes
 ```
 
-### A.7 问题四：储能容量扫描和 24 场景调度明细导出
+== A.7 问题四：储能容量扫描和 24 场景调度明细导出
 
 ```python
 max_curt_scenario = off_df.sort_values("弃电/MWh", ascending=False).iloc[0]["场景"]
@@ -503,76 +530,177 @@ pd.DataFrame(summary_rows).to_csv(
     encoding="utf-8-sig",
 )
 ```
+#pagebreak()
+= 附录B 正文未完整展开的数据文件索引
 
-## 附录B 正文未完整展开的数据文件索引
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    inset: 4pt,
+    stroke: 0.5pt + rgb("#888888"),
+    align: horizon,
+    [*文件*],
+    [*内容说明*],
+    [*对应正文*],
+    [`q2_all_productions_discrete.csv`],
+    [120×11；问题二：5 档日产量 × 24 场景离散开停完整结果],
+    [2.2],
+    [`q2_best_by_scenario_discrete.csv`],
+    [24×11；问题二：每个场景最低吨氨成本的离散方案],
+    [2.2],
+    [`q2_boxplot_outliers.csv`],
+    [38×14；问题二：箱线图离散点明细],
+    [2.2],
+    [`q2_boxplot_outlier_summary.csv`],
+    [18×10；问题二：离散点按产量和指标汇总],
+    [2.2],
+    [`q2_typical_results_summary.csv`],
+    [5×10；问题二（1）：典型风光场景五档日产量结果],
+    [2.1],
+    [`q2_typical_open_hour_matrix.csv`],
+    [5×25；问题二（1）：典型场景五档日产量开机小时矩阵],
+    [2.1],
+    [`q3_all_productions_continuous.csv`],
+    [120×12；问题三：5 档日产量 × 24 场景连续调节完整结果],
+    [3.1],
+    [`q3_120_optimal_schemes.csv`],
+    [120×36；问题三：120 个连续调节最优方案的逐小时功率和指标],
+    [3.1],
+    [`q3_optimal_load_rate_by_scenario.csv`],
+    [120×26；问题三：每种场景、每种日产量的 24 小时负荷率],
+    [3.1],
+    [`q3_best_by_scenario_continuous.csv`],
+    [24×12；问题三：每个场景最低吨氨成本连续方案],
+    [3.1],
+    [`q2_q3_all_productions_compare.csv`],
+    [120×27；问题二与问题三全部场景、全部产量对比],
+    [3.3],
+    [`q2_q3_cost_difference_curves_by_production.csv`],
+    [120×22；问题二、三吨氨成本差值持续曲线数据],
+    [3.3],
+    [`q4_offgrid_no_storage.csv`],
+    [24×5；问题四（1）：无储能离网各场景产量、成本、弃电和缺供],
+    [4.1],
+    [`q4_min_capacity_estimates.csv`],
+    [4×8；问题四（1）：能源自治装机估算结果],
+    [4.1],
+    [`q4_min_capacity_binding_hours.csv`],
+    [24×5；问题四（1）：逐小时功率自治紧约束时段],
+    [4.1],
+    [`q4_energy_autonomy_compare_by_scenario.csv`],
+    [24×7；问题四（1）：电量自治等比放大与分别优化逐场景对比],
+    [4.1],
+    [`q4_storage_scan.csv`],
+    [301×5；问题四（2）：最大弃电场景下 0-300 MWh 储能容量扫描],
+    [4.2],
+    [`q4_storage_by_scenario.csv`],
+    [24×7；问题四（2）：155 MWh 储能下各场景汇总结果],
+    [4.2],
+    [`q4_storage_dispatch_all_scenarios.csv`],
+    [576×13；问题四（2）：24 场景 × 24 小时有储能完整调度方案],
+    [4.2],
+    [`q4_storage_dispatch_all_scenarios_summary.csv`],
+    [24×6；问题四（2）：有储能调度逐场景汇总],
+    [4.2],
+    [`q4_storage_improvement_by_scenario.csv`],
+    [24×10；问题四（2）：储能前后产量、弃电和成本变化],
+    [4.2],
+    [`q4_w4p1_storage_dispatch.csv`],
+    [24×12；问题四（2）：最大弃电场景 W4P1 有储能逐小时调度],
+    [4.2],
+    [`q4_grid_connected_same_storage_production.csv`],
+    [24×11；问题四（3）：同产量并网对照结果],
+    [4.3],
+    [`q4_offgrid_grid_cost_gap.csv`],
+    [24×12；问题四（3）：离网储能与并网同产量吨氨成本差],
+    [4.3],
+    [`q4_mode_summary.csv`],
+    [5×4；问题四（3）：不同运行模式年度汇总],
+    [4.3],
+  )
+)
 
-下表列出正文中未逐行展开、但用于计算或复核的重要结果文件。所有文件均位于 `outputs/` 目录。
+= 附录C 正文图片与补充图片索引
 
-| 文件                                               |    规模 | 内容说明                                            | 对应正文 |
-| -------------------------------------------------- | ------: | --------------------------------------------------- | -------- |
-| `q2_all_productions_discrete.csv`                | 120×11 | 问题二：5 档日产量 × 24 场景离散开停完整结果       | 2.2      |
-| `q2_best_by_scenario_discrete.csv`               |  24×11 | 问题二：每个场景最低吨氨成本的离散方案              | 2.2      |
-| `q2_boxplot_outliers.csv`                        |  38×14 | 问题二：箱线图离散点明细                            | 2.2      |
-| `q2_boxplot_outlier_summary.csv`                 |  18×10 | 问题二：离散点按产量和指标汇总                      | 2.2      |
-| `q2_typical_results_summary.csv`                 |   5×10 | 问题二（1）：典型风光场景五档日产量结果             | 2.1      |
-| `q2_typical_open_hour_matrix.csv`                |   5×25 | 问题二（1）：典型场景五档日产量开机小时矩阵         | 2.1      |
-| `q3_all_productions_continuous.csv`              | 120×12 | 问题三：5 档日产量 × 24 场景连续调节完整结果       | 3.1      |
-| `q3_120_optimal_schemes.csv`                     | 120×36 | 问题三：120 个连续调节最优方案的逐小时功率和指标    | 3.1      |
-| `q3_optimal_load_rate_by_scenario.csv`           | 120×26 | 问题三：每种场景、每种日产量的 24 小时负荷率        | 3.1      |
-| `q3_best_by_scenario_continuous.csv`             |  24×12 | 问题三：每个场景最低吨氨成本连续方案                | 3.1      |
-| `q2_q3_all_productions_compare.csv`              | 120×27 | 问题二与问题三全部场景、全部产量对比                | 3.3      |
-| `q2_q3_cost_difference_curves_by_production.csv` | 120×22 | 问题二、三吨氨成本差值持续曲线数据                  | 3.3      |
-| `q4_offgrid_no_storage.csv`                      |   24×5 | 问题四（1）：无储能离网各场景产量、成本、弃电和缺供 | 4.1      |
-| `q4_min_capacity_estimates.csv`                  |    4×8 | 问题四（1）：能源自治装机估算结果                   | 4.1      |
-| `q4_min_capacity_binding_hours.csv`              |   24×5 | 问题四（1）：逐小时功率自治紧约束时段               | 4.1      |
-| `q4_energy_autonomy_compare_by_scenario.csv`     |   24×7 | 问题四（1）：电量自治等比放大与分别优化逐场景对比   | 4.1      |
-| `q4_storage_scan.csv`                            |  301×5 | 问题四（2）：最大弃电场景下 0-300 MWh 储能容量扫描  | 4.2      |
-| `q4_storage_by_scenario.csv`                     |   24×7 | 问题四（2）：155 MWh 储能下各场景汇总结果           | 4.2      |
-| `q4_storage_dispatch_all_scenarios.csv`          | 576×13 | 问题四（2）：24 场景 × 24 小时有储能完整调度方案   | 4.2      |
-| `q4_storage_dispatch_all_scenarios_summary.csv`  |   24×6 | 问题四（2）：有储能调度逐场景汇总                   | 4.2      |
-| `q4_storage_improvement_by_scenario.csv`         |  24×10 | 问题四（2）：储能前后产量、弃电和成本变化           | 4.2      |
-| `q4_w4p1_storage_dispatch.csv`                   |  24×12 | 问题四（2）：最大弃电场景 W4P1 有储能逐小时调度     | 4.2      |
-| `q4_grid_connected_same_storage_production.csv`  |  24×11 | 问题四（3）：同产量并网对照结果                     | 4.3      |
-| `q4_offgrid_grid_cost_gap.csv`                   |  24×12 | 问题四（3）：离网储能与并网同产量吨氨成本差         | 4.3      |
-| `q4_mode_summary.csv`                            |    5×4 | 问题四（3）：不同运行模式年度汇总                   | 4.3      |
+#figure(
+  table(
+    columns: (auto, auto),
+    inset: 4pt,
+    stroke: 0.5pt + rgb("#888888"),
+    align: horizon,
+    [*文件*],
+    [*内容说明*],
+    [`q1_power_curves.png`],
+    [问题一总负荷与风光出力组合图],
+    [`q1_buy_sell_curves.png`],
+    [问题一购电与上网曲线],
+    [`q2_typical_open_hours_gantt.png`],
+    [问题二（1）典型场景五档日产量开机小时甘特图],
+    [`q2_typical_indicator_bars.png`],
+    [问题二（1）典型场景三项绿电指标],
+    [`q2_cost_buy_sell_distribution.png`],
+    [问题二（2）吨氨成本、购电、上网分布],
+    [`q2_green_indicator_distribution.png`],
+    [问题二（2）绿电指标分布],
+    [`q2_cost_distribution_curves_by_production.png`],
+    [问题二（2）五档产量吨氨成本持续曲线],
+    [`q3_representative_scenario_power_heatmaps.png`],
+    [问题三代表场景连续调节方案热力图],
+    [`q3_best_production_by_scenario.png`],
+    [问题三各场景最优日产量],
+    [`q3_cost_distribution_curves_by_production.png`],
+    [问题三五档产量吨氨成本持续曲线],
+    [`q2_q3_cost_difference_curves_by_production.png`],
+    [问题二、三五档产量吨氨成本差值曲线],
+    [`q4_offgrid_production_lollipop.png`],
+    [问题四无储能离网日产量排序],
+    [`q4_offgrid_cost_lollipop.png`],
+    [问题四无储能离网吨氨成本排序],
+    [`q4_offgrid_curtailment_rank.png`],
+    [问题四无储能弃电量排序，识别最大弃电场景],
+    [`q4_energy_autonomy_compare.png`],
+    [问题四电量自治等比放大与分别优化对比],
+    [`q4_storage_capacity_scan.png`],
+    [问题四最大弃电场景储能容量扫描],
+    [`q4_w4p1_storage_dispatch.png`],
+    [问题四 W4P1 有储能逐小时调度],
+    [`q4_storage_dispatch_w4p1.png`],
+    [问题四 W4P1 代表场景有储能调度方案],
+    [`q4_storage_dispatch_w5p1.png`],
+    [问题四 W5P1 代表场景有储能调度方案],
+    [`q4_storage_dispatch_w2p4.png`],
+    [问题四 W2P4 代表场景有储能调度方案],
+    [`q4_storage_dispatch_w3p3.png`],
+    [问题四 W3P3 代表场景有储能调度方案],
+    [`q4_storage_improvement_by_scenario.png`],
+    [问题四储能对 24 场景的改善效果],
+    [`q4_offgrid_grid_cost_gap.png`],
+    [问题四同产量离网储能与并网成本差],
+    [`q4_mode_summary_compare.png`],
+    [问题四不同运行模式年度产量与成本对比],
+  )
+)
 
-## 附录C 正文图片与补充图片索引
+= 附录D 可复现实验文件说明
 
-| 文件                                               | 内容说明                                    |
-| -------------------------------------------------- | ------------------------------------------- |
-| `q1_power_curves.png`                            | 问题一总负荷与风光出力组合图                |
-| `q1_buy_sell_curves.png`                         | 问题一购电与上网曲线                        |
-| `q2_typical_open_hours_gantt.png`                | 问题二（1）典型场景五档日产量开机小时甘特图 |
-| `q2_typical_indicator_bars.png`                  | 问题二（1）典型场景三项绿电指标             |
-| `q2_cost_buy_sell_distribution.png`              | 问题二（2）吨氨成本、购电、上网分布         |
-| `q2_green_indicator_distribution.png`            | 问题二（2）绿电指标分布                     |
-| `q2_cost_distribution_curves_by_production.png`  | 问题二（2）五档产量吨氨成本持续曲线         |
-| `q3_representative_scenario_power_heatmaps.png`  | 问题三代表场景连续调节方案热力图            |
-| `q3_best_production_by_scenario.png`             | 问题三各场景最优日产量                      |
-| `q3_cost_distribution_curves_by_production.png`  | 问题三五档产量吨氨成本持续曲线              |
-| `q2_q3_cost_difference_curves_by_production.png` | 问题二、三五档产量吨氨成本差值曲线          |
-| `q4_offgrid_production_lollipop.png`             | 问题四无储能离网日产量排序                  |
-| `q4_offgrid_cost_lollipop.png`                   | 问题四无储能离网吨氨成本排序                |
-| `q4_offgrid_curtailment_rank.png`                | 问题四无储能弃电量排序，识别最大弃电场景    |
-| `q4_energy_autonomy_compare.png`                 | 问题四电量自治等比放大与分别优化对比        |
-| `q4_storage_capacity_scan.png`                   | 问题四最大弃电场景储能容量扫描              |
-| `q4_w4p1_storage_dispatch.png`                   | 问题四 W4P1 有储能逐小时调度                |
-| `q4_storage_dispatch_w4p1.png`                   | 问题四 W4P1 代表场景有储能调度方案          |
-| `q4_storage_dispatch_w5p1.png`                   | 问题四 W5P1 代表场景有储能调度方案          |
-| `q4_storage_dispatch_w2p4.png`                   | 问题四 W2P4 代表场景有储能调度方案          |
-| `q4_storage_dispatch_w3p3.png`                   | 问题四 W3P3 代表场景有储能调度方案          |
-| `q4_storage_improvement_by_scenario.png`         | 问题四储能对 24 场景的改善效果              |
-| `q4_offgrid_grid_cost_gap.png`                   | 问题四同产量离网储能与并网成本差            |
-| `q4_mode_summary_compare.png`                    | 问题四不同运行模式年度产量与成本对比        |
+#figure(
+  table(
+    columns: (auto, auto),
+    inset: 4pt,
+    stroke: 0.5pt + rgb("#888888"),
+    align: horizon,
+    [*文件*],
+    [*说明*],
+    [`A题第1-4题计算代码.ipynb`],
+    [完整计算 notebook，包含数据录入、建模计算、结果导出和绘图。],
+    [`第1-4题详细解答.md`],
+    [正文解答文件，目前包含第 1-5 题文字、公式、结果表和主要图。],
+    [`所有附件合并数据.txt`],
+    [用户整理后的题目附件数据合并文本。],
+    [`A题_txt格式数据/`],
+    [各附件拆分后的文本数据。],
+    [`outputs/`],
+    [全部模型输出表格和图片。],
+  )
+)
 
-## 附录D 可复现实验文件说明
-
-| 文件                         | 说明                                                        |
-| ---------------------------- | ----------------------------------------------------------- |
-| `A题第1-4题计算代码.ipynb` | 完整计算 notebook，包含数据录入、建模计算、结果导出和绘图。 |
-| `第1-4题详细解答.md`       | 正文解答文件，目前包含第 1-5 题文字、公式、结果表和主要图。 |
-| `所有附件合并数据.txt`     | 用户整理后的题目附件数据合并文本。                          |
-| `A题_txt格式数据/`         | 各附件拆分后的文本数据。                                    |
-| `outputs/`                 | 全部模型输出表格和图片。                                    |
-
-为保证论文正文简洁，建议正文只保留关键表格和主要图；完整场景结果、逐小时调度、成本矩阵和开机/负荷率矩阵统一通过本附录表格索引查阅。
